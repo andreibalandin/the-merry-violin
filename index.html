@@ -16,6 +16,11 @@
             line-height: 1.4;
         }
 
+        /* Use border-box so width:100% includes padding and prevents overflow */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
         main {
             min-height: calc(100vh - 120px);
         }
@@ -41,6 +46,10 @@
             display: block;
         }
 
+        /* When the content column becomes very large, anchor images to the bottom
+           so their lower part remains visible instead of being cropped at the top.
+           (removed JS-driven large-content behavior; use content-full stacking below) */
+
         .content-column {
             font-family: 'Century Gothic', AppleGothic, Arial, sans-serif;
             color: #000000;
@@ -57,6 +66,7 @@
         }
 
         header {
+            width: 100%;
             background-color: #020664;
             display: flex;
             justify-content: center;
@@ -64,21 +74,44 @@
             padding: 20px 0;
         }
 
-        header img {
+        /* Logo container uses a background image so the artwork can be centered
+           regardless of any transparent canvas or padding in the image file. */
+        .logo {
+            width: min(90%, 360px);
             height: 130px;
-            width: auto;
-            display: block;
+            background-image: url('./the-merry-violin-logo.webp');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            margin: 0 auto;
         }
-
+        
         .pricing-table {
             border-collapse: separate;
             border-spacing: 20px 0;
-            margin-top: 10px;
+            margin: 1em 0 2em 0;
         }
 
         .pricing-table td:nth-child(2),
         .pricing-table th:nth-child(2) {
             text-align: left;
+        }
+
+        .content-column h3,
+        .pricing-table h3 {
+            margin: 0;
+        }
+
+        .no-break {
+            white-space: nowrap;
+        }
+
+        .pricing-table th {
+            font-size: 1.125em;
+            font-weight: bold;
+            text-align: center;
+            color: inherit;
+            padding-bottom: 1em;
         }
 
         .contact-email {
@@ -89,13 +122,87 @@
             display: block;
             line-height: 1.2;
         }
+
+        /* Mobile fallback: always stack the hero columns on narrow screens so
+           images remain visible (fixes cases like 510px width). */
+        @media (max-width: 600px) {
+            .hero-lessons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .hero-lessons .content-column,
+            .hero-lessons .image-column {
+                width: 100%;
+                flex: none;
+            }
+
+            .hero-lessons .content-column {
+                order: 1;
+            }
+
+            .hero-lessons .image-column {
+                order: 2;
+                display: block;
+                align-items: center;
+                overflow: visible;
+                padding: 0;
+                min-height: 1px;
+            }
+
+            .hero-lessons .image-column img {
+                width: 100%;
+                height: auto;
+                max-height: none;
+                object-fit: cover;
+                object-position: center;
+                display: block;
+            }
+        }
+
+        /* When the content column fills the hero width entirely, stack images below.
+           This ensures image-column images are visible under the content instead of
+           disappearing when the content takes the whole row. */
+        .hero-lessons.content-full {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .hero-lessons.content-full .content-column,
+        .hero-lessons.content-full .image-column {
+            width: 100%;
+            flex: none;
+        }
+
+                order: 2;
+                align-items: center;
+                overflow: visible;
+                display: block;
+                padding: 0;
+                min-height: 1px;
+
+        .hero-lessons.content-full .image-column {
+            order: 2;
+            align-items: center;
+            overflow: visible;
+            padding-bottom: 12px;
+        }
+
+        .hero-lessons.content-full .image-column img {
+            width: 100%;
+            height: auto;
+            max-height: none;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
     </style>
 </head>
 
 <body>
 
     <header>
-        <img src="./the-merry-violin-logo.webp" alt="The Merry Violin - Lessons for All Ages Logo">
+        <div class="logo" role="img" aria-label="The Merry Violin - Lessons for All Ages Logo"></div>
     </header>
 
     <main>
@@ -109,28 +216,26 @@
 
                 <p><strong>I am a McGill violin performance graduate, with a teaching degree and two decades of teaching experience.</strong></p>
                 <p><strong>I am strict, fun, patient and kind.</strong></p>
-                <p><strong>Lessons with me are focused on technique, musicianship and note-reading.</strong></p>
+                <p><strong>Lessons with me are focused on technique, musicianship and <span class="no-break">note-reading</span>.</strong></p>
                 <p><strong>My teacher superpower is setting you up so well on your instrument, that you will play with a sweet, warm sound, from the start.</strong></p>
 
-                <p class="pricing-table">
-                    <table class="pricing-table">
-                        <thead><h3>Lesson fees:</h3></thead>
-                        <tbody>
-                            <tr>
-                                <td>60 minutes</td>
-                                <td>$50</td>
-                            </tr>
-                            <tr>
-                                <td>45 minutes</td>
-                                <td>$38</td>
-                            </tr>
-                            <tr>
-                                <td>30 minutes</td>
-                                <td>$25</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </p>
+                <table class="pricing-table">
+                    <thead><tr><th colspan="2">Lesson fees:</th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td>60 minutes</td>
+                            <td>$50</td>
+                        </tr>
+                        <tr>
+                            <td>45 minutes</td>
+                            <td>$38</td>
+                        </tr>
+                        <tr>
+                            <td>30 minutes</td>
+                            <td>$25</td>
+                        </tr>
+                    </tbody>
+                </table>
 
                 <a class="contact-email" href="mailto:the.merry.violin@gmail.com">the.merry.violin@gmail.com</a>
             </div>
